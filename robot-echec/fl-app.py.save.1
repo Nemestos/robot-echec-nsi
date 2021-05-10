@@ -1,0 +1,18 @@
+#!/usr/bin/python
+
+from flask import request,jsonify
+from flask_api import FlaskAPI
+
+app=FlaskAPI(__name__)
+
+@app.route('/',methods=["GET"])
+def api_root():
+    return {"message":"c'est bon mdr"}
+
+@app.route('/',methods=["POST"])
+def send_location():
+    return {"message":request.get_json(f}
+
+if __name__=="__main__":
+    app.run()
+

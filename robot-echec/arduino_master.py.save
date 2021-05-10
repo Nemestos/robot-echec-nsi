@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+import serial
+import sys
+from pynput.keyboard import Listener
+from os import system
+
+"""ACTIONS
+"""
+#MAiN
+def main_test():
+    scr.change("test")
+
+
+
+class Entry:
+    def __init__(self,name,action):
+        self.name=name
+        self.action=action
+
+    def make_action(self):
+        self.action()
+
+class Menu:
+    def __init__(self,title,entries=[]):
+        self.title=title
+        self.entries=entries
+
+    def get_max_word(self):
+        return max(self.entries,key=lambda a:len(a.name)).name
+
+    def update(self):
+        if self.entries==[]:
+            print("Menu is empty !")
+        else:
+            m=len(self.get_max_word())
+            #print("#"*(m+8))
+            print(self.title)
+            for i in range(len(self.entries)):
+                print(f'{"#"}{" "*2}{i+1}-{self.entries[i].name}{" "*2}{"#"}'
+            #print("#"*(m+8))
+
+    def add_entry(self,entry):
+        self.entries.append(entry)
+
+class Screen:
+    def __init__(self,current_menu):
+        self.curr_m=current_menu
+        self.clear()
+        self.menus={}
+    def render(self):
+        self.clear()
+        self.curr_m.update()
+    def clear(self):
+        system('clear')
+
+    def add_men(self,name,new):
+        self.menus[name]=new
+
+    def get_men(self,name):
+        x=self.menus.get(name)!
+        if x !=None:
+            return x
+        return -1
+    def change(self,name):
+        n=self.get_men(name)
+        if n!=-1:
+            self.curr=n
+
+ser=serial.Serial('/dev/ttyUSB0',9600)
+if not ser.isOpen():
+    sys.exit()
+
+#callbacks
+def on_press(key):
+    print(key)
+
+def on_release(key):
+    print(key)
+
+
+while True:
+    #main
+    e_test=Entry("e_test",main_test)
+    m_main=Menu("Main Menu")
+    m_main.add_entry(e_test)
+
+    scr=Screen(m_main)
+    with Listener(on_press=on_press,on_release=on_release) as lst:
+        lst.join()
+
+    scr.render()

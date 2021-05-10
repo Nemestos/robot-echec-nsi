@@ -1,0 +1,15 @@
+
+#!/usr/bin/python
+
+from flask import request
+from flask_api import FlaskAPI
+
+app=FlaskAPI(__name__)
+
+@app.route('/',methods=["GET"])
+def api_root():
+    return {"message":"c'est bon mdr"}
+
+if __name__=="__main__":
+    app.run()
+
