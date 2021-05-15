@@ -75,26 +75,13 @@ int ArmController::requestMovement(String compName, String keyName)
     Key *p_key = this->getKey(keyName);
     if (p_comp != nullptr && p_key != nullptr)
     {
-        this->updateValue(p_comp, p_key->m_dir);
+        //this->updateValue(p_comp, p_key->m_dir);
         return 1;
     }
     else
     {
         return -1;
     }
-}
-
-void ArmController::updateValue(ArmComponent *comp, ArmDirection direction)
-{
-    Logger *p_logger = Utils::getPoolRess<Logger>("logger");
-    int newValue = comp->m_currValue + (MOVE_FORCE * direction);
-    //newValue = Utils::clamp(newValue, MIN_SERVO, MAX_SERVO);
-
-    int compIndex = this->getComponentIndex(comp);
-    this->armComponents[compIndex]->m_currValue = newValue;
-
-    comp->m_servo.write(newValue);
-    p_logger->log(LoggingLevel::INFO, comp->m_name + " : " + newValue);
 }
 
 void ArmController::updateArm()
