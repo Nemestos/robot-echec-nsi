@@ -3,17 +3,15 @@
 #include "Logger.h"
 #include "KeyboardController.h"
 #include "ArmController.h"
-#include "Queue.h"
+#include "MovementsController.h"
 
 Pool &p_pool = Pool::getInst();
 KeyboardController *p_keyboard = new KeyboardController();
 Logger *p_logger = new Logger();
 ArmController *p_arm = new ArmController();
-Queue<Movement *> queue_mov;
+MovementsController *p_mov = new MovementsController();
 void request_mov(ArmComponent *comp, int desired_angle, int delay)
 {
-    Movement *final = new Movement(comp, desired_angle, delay);
-    queue_mov.push_back(final);
 }
 
 void setup_arm()
@@ -74,20 +72,20 @@ void setup_arm()
 void update_mov_queue()
 {
     //on recupere l'element en tete de file
-    Movement *first = queue_mov.get_first();
+    Movement *first = p_mov->get_first_movement();
     first->update();       //on met a jour la position
     if (first->isFinish()) //si il a atteind la position
     {
         //on le supprime pour laisser la place au suivant
-        queue_mov.pop_front();
+        p_mov->delete_first_movement();
     }
 }
 void setup()
 {
     Serial.begin(9600);
     //on configure le tableaux de ressourses en convertissant chaque objets sous le type ressource
-    Ressource *a_ressources[3] = {static_cast<Ressource *>(p_keyboard), static_cast<Ressource *>(p_logger), static_cast<Ressource *>(p_arm)};
-    p_pool.add_ressources(a_ressources, 3);
+    Ressource *a_ressources[4] = {static_cast<Ressource *>(p_keyboard), static_cast<Ressource *>(p_logger), static_cast<Ressource *>(p_arm), static_cast<Ressource *>(p_mov)};
+    p_pool.add_ressources(a_ressources, 4);
     setup_arm();
 }
 
@@ -95,7 +93,7 @@ void loop()
 {
     //p_keyboard->handlingCommand();
     //si il a des commandes a effectuer
-    if (queue_mov.get_lenght() > 0)
+    if (p_mov->movements_count() > 0)
     {
         update_mov_queue();
     }
