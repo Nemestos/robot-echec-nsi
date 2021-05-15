@@ -73,10 +73,12 @@ void setup_arm()
 
 void update_mov_queue()
 {
+    //on recupere l'element en tete de file
     Movement *first = queue_mov.get_first();
-    first->update();
-    if (first->isFinish())
+    first->update();       //on met a jour la position
+    if (first->isFinish()) //si il a atteind la position
     {
+        //on le supprime pour laisser la place au suivant
         queue_mov.pop_front();
     }
 }
@@ -92,6 +94,7 @@ void setup()
 void loop()
 {
     //p_keyboard->handlingCommand();
+    //si il a des commandes a effectuer
     if (queue_mov.get_lenght() > 0)
     {
         update_mov_queue();
