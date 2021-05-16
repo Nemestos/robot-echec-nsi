@@ -10,7 +10,7 @@ public:
     {
         return Pool::getInst().get_ressource<T>(name);
     }
-
+    
     template <typename T>
     static T clamp(const T &n, const T &lower, const T &upper) noexcept
     {

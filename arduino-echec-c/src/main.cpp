@@ -10,13 +10,9 @@ KeyboardController *p_keyboard = new KeyboardController();
 Logger *p_logger = new Logger();
 ArmController *p_arm = new ArmController();
 MovementsController *p_mov = new MovementsController();
-void request_mov(ArmComponent *comp, int desired_angle, int delay)
-{
-}
 
 void setup_arm()
 {
-
     //allocation des differents composant du bras
     ArmComponent *base = new ArmComponent("base", ArmsPin::ARM_BASE);
     // ArmComponent *shoulder = new ArmComponent("shoulder", ArmsPin::ARM_SHOULDER);
@@ -25,9 +21,9 @@ void setup_arm()
     // ArmComponent *gripper = new ArmComponent("grippper", ArmsPin::ARM_GRIPPER);
 
     //setup des movements par default:
-    request_mov(base, 150, DELAY_MOVEMENT);
-    request_mov(base, 0, DELAY_MOVEMENT);
-    request_mov(base, 10, DELAY_MOVEMENT);
+    p_mov->request_mov(base, 150, DELAY_MOVEMENT);
+    // p_mov->request_mov(base, 0, DELAY_MOVEMENT);
+    //p_mov->request_mov(base, 10, DELAY_MOVEMENT);
 
     //request_mov(base, 0, DELAY_MOVEMENT);
     // request_mov(shoulder, 150, DELAY_MOVEMENT);
@@ -36,8 +32,8 @@ void setup_arm()
     // request_mov(gripper, 150, DELAY_MOVEMENT);
 
     //allocation des differentes touches pour controller le bras(la clé et sa direction )
-    // Key *base_right = new Key("right", ArmDirection::RIGHT);
-    // Key *base_left = new Key("left", ArmDirection::LEFT);
+    Key *base_right = new Key("right", ArmDirection::RIGHT, base);
+    Key *base_left = new Key("left", ArmDirection::LEFT, base);
 
     // Key *shoulder_up = new Key("up", ArmDirection::UP);
     // Key *shoulder_down = new Key("down", ArmDirection::DOWN);
@@ -56,8 +52,8 @@ void setup_arm()
     // p_arm->addArmComponent(gripper);
 
     //transfert des clés au controlleur
-    // p_arm->addKey(base_right);
-    // p_arm->addKey(base_left);
+    p_arm->addKey(base_right);
+    p_arm->addKey(base_left);
 
     // p_arm->addKey(shoulder_up);
     // p_arm->addKey(shoulder_down);
@@ -91,7 +87,7 @@ void setup()
 
 void loop()
 {
-    //p_keyboard->handlingCommand();
+    p_keyboard->handlingCommand();
     //si il a des commandes a effectuer
     if (p_mov->movements_count() > 0)
     {

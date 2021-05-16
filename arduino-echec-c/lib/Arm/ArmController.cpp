@@ -69,21 +69,4 @@ int ArmController::getComponentIndex(ArmComponent *comp)
     return -1;
 }
 
-int ArmController::requestMovement(String compName, String keyName)
-{
-    ArmComponent *p_comp = this->getComponent(compName);
-    Key *p_key = this->getKey(keyName);
-    if (p_comp != nullptr && p_key != nullptr)
-    {
-        //this->updateValue(p_comp, p_key->m_dir);
-        return 1;
-    }
-    else
-    {
-        return -1;
-    }
-}
 
-void ArmController::updateArm()
-{
-}

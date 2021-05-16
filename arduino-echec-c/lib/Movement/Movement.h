@@ -34,7 +34,7 @@ public:
         {
             //le delay a ete passé et on ajoute de la force
             m_comp->adding_value(m_dir);
-            Serial.println(this->m_comp->get_curr());
+            //Serial.println(this->m_comp->get_curr());
             //on met a jour l'ancien temps
             this->m_last_time = millis();
         }

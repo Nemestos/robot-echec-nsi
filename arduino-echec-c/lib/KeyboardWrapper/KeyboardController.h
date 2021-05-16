@@ -3,7 +3,7 @@
 #include "Logger.h"
 #include "Ressource.h"
 #include "Pool.h"
-#include "ArmController.h"
+#include "MovementsController.h"
 #include "Shortcuts.h"
 enum class MessageType
 {
@@ -17,13 +17,9 @@ enum class MessageType
 class KeyboardController : public Ressource
 {
 private:
-    char key_press;
     char *name = "keyboard";
 
 public:
     KeyboardController() : Ressource(name, false) {} //on appelle le constructeur de base en passant le nom de la ressource
     void handlingCommand();
-
-    void updateKeyPress();
-    char getCurrentKeyPress();
 };

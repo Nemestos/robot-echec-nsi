@@ -34,13 +34,13 @@ struct ArmComponent
     String m_name;
     ArmsPin m_pin;
     Servo m_servo;
-    int m_currValue = 0;
+    int m_currValue = 150;
 
     ArmComponent(String name, ArmsPin pin, int default_val = 100) : m_name(name), m_pin(pin), m_currValue(default_val)
     {
         //on init le servo avec un rotation par default
-        m_servo.attach((int)m_pin);
         m_servo.write(m_currValue);
+        m_servo.attach((int)m_pin);
     }
     // changer la rotation instantanement
     void change_rotation(int newval)
@@ -65,16 +65,16 @@ struct Key
 {
     String m_name;
     ArmDirection m_dir;
-    Key(String name, ArmDirection dir) : m_name(name), m_dir(dir) {}
+    ArmComponent *m_comp;
+    Key(String name, ArmDirection dir, ArmComponent *comp) : m_name(name), m_dir(dir), m_comp(comp) {}
 };
-
-
 
 //constantes utiles
 const int SERVO_COUNT = 5;
 const int KEYS_COUNT = 8;
 
 const int DELAY_MOVEMENT = 50;
+const int ADDING_FORCE = 2;
 
 const int MIN_SERVO = 0;
 const int MAX_SERVO = 180;
@@ -86,14 +86,13 @@ private:
 public:
     void addArmComponent(ArmComponent *component);
     void addKey(Key *key);
-    int requestMovement(String compName, String keyName);
-    void updateArm();
+    Key *getKey(String keyName);
     ArmController() : Ressource(name, false) {} //on appelle le constructeur de la classe mère en passant le nom de la ressource
 
 private:
     ArmComponent *getComponent(String component);
     int getComponentIndex(ArmComponent *comp);
-    Key *getKey(String keyName);
+
     char *name = "arm";
     int currCompCount = 0;
     int currKeysCount = 0;

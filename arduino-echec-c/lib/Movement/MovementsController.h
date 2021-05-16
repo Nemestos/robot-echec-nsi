@@ -9,7 +9,7 @@ classe permettant la gestion des movements du servo en utilisant une file
 class MovementsController : public Ressource
 {
 private:
-    char *name = "logger";
+    char *name = "movement";
     Queue<Movement *> m_queue;
 
 public:
@@ -19,6 +19,12 @@ public:
         Movement *final = new Movement(comp, desired_angle, delay);
         this->m_queue.push_back(final);
     };
+    void request_adding_mov(ArmComponent *comp, int force, int delay)
+    {
+        int last = comp->get_curr();
+        Movement *final = new Movement(comp, last + force, delay);
+        this->m_queue.push_back(final);
+    }
     int movements_count()
     {
         return this->m_queue.get_lenght();
