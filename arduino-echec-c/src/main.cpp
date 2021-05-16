@@ -21,7 +21,7 @@ void setup_arm()
     // ArmComponent *gripper = new ArmComponent("grippper", ArmsPin::ARM_GRIPPER);
 
     //setup des movements par default:
-    p_mov->request_mov(base, 150, DELAY_MOVEMENT);
+    //p_mov->request_mov(base, 50, DELAY_MOVEMENT);
     // p_mov->request_mov(base, 0, DELAY_MOVEMENT);
     //p_mov->request_mov(base, 10, DELAY_MOVEMENT);
 

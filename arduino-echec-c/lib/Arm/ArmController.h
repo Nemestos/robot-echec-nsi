@@ -74,7 +74,7 @@ const int SERVO_COUNT = 5;
 const int KEYS_COUNT = 8;
 
 const int DELAY_MOVEMENT = 50;
-const int ADDING_FORCE = 2;
+const int ADDING_FORCE = 10;
 
 const int MIN_SERVO = 0;
 const int MAX_SERVO = 180;

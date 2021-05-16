@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import time
+import os
 from os import system
 from pynput.keyboard import Key, Listener
 import threading
@@ -26,6 +27,12 @@ def clavier_cmd():
     if current_key in availables_keys:
         bridge.send_message(current_key, MessageType.MOTOR)
         current_key = ""
+
+def exit_cmd():
+    """
+    exit_cmd : fonction permettant de quitter le programme depuis le menu principal
+    """
+    sys.exit()
 
 
 class MessageType(Enum):
@@ -68,8 +75,14 @@ class ArduinoBridge:
         init_connection: initialise la connexion avec l'arduino et quitte le prog si erreur
         """
         try:
-            self.connection = serial.Serial('/dev/tty'+self.port, self.baud)
-            print("Connection SUCESS with", self.port)
+            #linux os
+            if os.name=="posix":
+                self.connection = serial.Serial(port='/dev/tty'+self.port, baudrate=self.baud,timeout=0)
+                print("Connection SUCESS with", self.port)
+            else:
+                self.connection = serial.Serial(self.port,self.baud,timeout=0)
+                print("Connection SUCESS with", self.port)
+
         except:
             print("ERROR : URGENT EXIT !!")
             sys.exit()
@@ -99,7 +112,7 @@ class Entry:
 
 class Menu:
     """
-    Menu : classe servant à regrouper des entrées et les afficher pour faire un choix et se rediriger vers celle ci 
+    Menu : classe servant à regrouper des entrées et les afficher pour faire un choix et se rediriger vers celle ci
 
     Attributes:
         name(str) -- nom du menu qui sera affiché en titre
@@ -150,8 +163,8 @@ class Screen:
         self.curr_d = None
 
         self.display = {}
-
         self.clear()
+
 
     def render(self):
         """
@@ -162,7 +175,10 @@ class Screen:
         self.curr_d.update()
 
     def clear(self):
-        system('clear')
+        if os.name=="posix":
+            system('clear')
+        else:
+            system('cls')
 
     def add_display(self, new):
         """
@@ -216,29 +232,39 @@ def key_release(key):
 def main():
     while True:
         scr.render()
-        time.sleep(0.5)
+        time.sleep(0.3)
 
 
 # main
 e_clav_cmd = Entry("commandes", clavier_cmd)
+e_exit=Entry("quitter",exit_cmd)
 
 m_main = Menu("main")
 m_main.add_entry(e_clav_cmd)
+m_main.add_entry(e_exit)
 
 # screen setup
 scr = Screen()
 scr.add_display(m_main)
 scr.add_display(e_clav_cmd)
+scr.add_display(e_exit)
 scr.curr_d = m_main
+
+# arduino bridge setup
+if os.name=="posix":
+    bridge = ArduinoBridge("USB1", 9600,ArduinoPlatform.LINUX)
+    bridge.init_connection()
+else:
+    bridge = ArduinoBridge("COM3", 9600)
+    bridge.init_connection()
+
+
 
 
 # keyboard setup
 
 listener = Listener(on_press=key_press, on_release=key_release)
 listener.start()
-threading.Thread(target=main).start()
+thr=threading.Thread(target=main)
+thr.start()
 
-
-# arduino bridge setup
-bridge = ArduinoBridge("USB1", 9600)
-bridge.init_connection()
