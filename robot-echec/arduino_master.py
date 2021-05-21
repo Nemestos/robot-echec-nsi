@@ -77,10 +77,10 @@ class ArduinoBridge:
         try:
             #linux os
             if os.name=="posix":
-                self.connection = serial.Serial(port='/dev/tty'+self.port, baudrate=self.baud,timeout=0)
+                self.connection = serial.Serial(port='/dev/tty'+self.port, baudrate=self.baud,timeout=None)
                 print("Connection SUCESS with", self.port)
             else:
-                self.connection = serial.Serial(self.port,self.baud,timeout=0)
+                self.connection = serial.Serial(self.port,self.baud,timeout=None,)
                 print("Connection SUCESS with", self.port)
 
         except:

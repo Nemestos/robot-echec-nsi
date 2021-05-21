@@ -1,6 +1,5 @@
 #pragma once
 #include "Pool.h"
-#include "Logger.h"
 
 class Utils
 {

@@ -26,7 +26,10 @@ public:
     {
         return m_comp->get_curr() == m_angle_final;
     }
-
+    int get_curr_rot()
+    {
+        return m_comp->get_curr();
+    }
     void update()
     {
         //si l'intervalle entre le temps courant (en ms) et l'ancien temps est bien superieure
@@ -34,7 +37,6 @@ public:
         {
             //le delay a ete passé et on ajoute de la force
             m_comp->adding_value(m_dir);
-            //Serial.println(this->m_comp->get_curr());
             //on met a jour l'ancien temps
             this->m_last_time = millis();
         }

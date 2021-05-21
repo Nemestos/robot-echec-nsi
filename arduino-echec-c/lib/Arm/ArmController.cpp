@@ -2,47 +2,23 @@
 
 void ArmController::addArmComponent(ArmComponent *component)
 {
-    Logger *p_logger = Utils::getPoolRess<Logger>("logger");
+
     if (this->currCompCount < SERVO_COUNT)
     {
         this->armComponents[this->currCompCount] = component;
-        p_logger->log(LoggingLevel::INFO, "Adding arm component :" + component->m_name);
+        Serial.println("Adding arm component :" + component->m_name);
 
         this->currCompCount += 1;
     }
     else
     {
-        p_logger->log(LoggingLevel::ERROR, "Can't add component because arm is fully configure");
+        Serial.println("Can't add component because arm is fully configure");
     }
 }
 
-void ArmController::addKey(Key *key)
-{
-    Logger *p_logger = Utils::getPoolRess<Logger>("logger");
-    if (this->currKeysCount < KEYS_COUNT)
-    {
-        this->keys[this->currKeysCount] = key;
-        p_logger->log(LoggingLevel::INFO, "Adding key :" + key->m_name);
 
-        this->currKeysCount += 1;
-    }
-    else
-    {
-        p_logger->log(LoggingLevel::ERROR, "Can't add key because keys are fully configure");
-    }
-}
 
-Key *ArmController::getKey(String keyName)
-{
-    for (int i = 0; i < KEYS_COUNT; i++)
-    {
-        if (this->keys[i]->m_name == keyName)
-        {
-            return this->keys[i];
-        }
-    }
-    return nullptr;
-}
+
 
 ArmComponent *ArmController::getComponent(String component)
 {
@@ -68,5 +44,3 @@ int ArmController::getComponentIndex(ArmComponent *comp)
     }
     return -1;
 }
-
-

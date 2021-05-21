@@ -4,7 +4,6 @@
 #include "Servo.h"
 #include "Ressource.h"
 #include "Pool.h"
-#include "Logger.h"
 #include "Shortcuts.h"
 #include "Queue.h"
 
@@ -60,20 +59,11 @@ struct ArmComponent
     }
 };
 
-//contient les infos pour une clé du clavier specifique qui va etre utiliser pour diriger le bras
-struct Key
-{
-    String m_name;
-    ArmDirection m_dir;
-    ArmComponent *m_comp;
-    Key(String name, ArmDirection dir, ArmComponent *comp) : m_name(name), m_dir(dir), m_comp(comp) {}
-};
-
 //constantes utiles
 const int SERVO_COUNT = 5;
 const int KEYS_COUNT = 8;
 
-const int DELAY_MOVEMENT = 50;
+const int DELAY_MOVEMENT = 10;
 const int ADDING_FORCE = 10;
 
 const int MIN_SERVO = 0;
@@ -85,18 +75,15 @@ class ArmController : public Ressource
 private:
 public:
     void addArmComponent(ArmComponent *component);
-    void addKey(Key *key);
-    Key *getKey(String keyName);
+    ArmComponent *getComponent(String component);
+    int getComponentIndex(ArmComponent *comp);
     ArmController() : Ressource(name, false) {} //on appelle le constructeur de la classe mère en passant le nom de la ressource
 
 private:
-    ArmComponent *getComponent(String component);
-    int getComponentIndex(ArmComponent *comp);
-
     char *name = "arm";
     int currCompCount = 0;
     int currKeysCount = 0;
     //tableau comportant les composant du bras sous forme de tableaux de pointeurs
     ArmComponent *armComponents[SERVO_COUNT] = {nullptr};
-    Key *keys[KEYS_COUNT] = {nullptr};
+
 };
