@@ -6,7 +6,6 @@ from pynput.keyboard import Key, Listener
 import threading
 import sys
 import serial
-from serial import tools
 import utils
 from enum import Enum
 
@@ -15,9 +14,9 @@ current_key = ""
 
 def clavier_cmd():
     """
-    clavier_cmd : fonction permettant d'envoyer des commandes moteurs a l'arduino
+    clavier_cmd : fonction permettant d'envoyer des commandes a l'arduino
     """
-    availables_keys=["up", "right", "down", "left","z","s","p","m"]
+    availables_keys=["s","d"]
     print("---COMMANDES---(Echap pour retourner au main menu)")
     global current_key
     print("key "+current_key)
@@ -25,9 +24,13 @@ def clavier_cmd():
         scr.change("main")
 
     if current_key in availables_keys:
-        bridge.send_message(current_key, MessageType.MOTOR)
+        #envoie de la commande permettant de serialiser
+        if current_key=="s":
+            bridge.send_message("", MessageType.SERIALIZE)
+        elif current_key=="d":
+            bridge.send_message("",MessageType.DIRECT)
+            
         current_key = ""
-
 def exit_cmd():
     """
     exit_cmd : fonction permettant de quitter le programme depuis le menu principal
@@ -36,11 +39,9 @@ def exit_cmd():
 
 
 class MessageType(Enum):
-    INFO = 1,
-    DEBUG = 2,
-    MOTOR = 3,
-    SCREEN = 4,
-    ERROR = 5,
+    SERIALIZE=1,
+    DIRECT=2,
+    SCREEN =3,
 
 
 class ArduinoBridge:
@@ -67,8 +68,20 @@ class ArduinoBridge:
             m_type(MessageType) -- type du message à envoyé(situé en en tete du message)
         """
         print("SENDING:")
-        payload = str(m_type.value[0])+message+"\n"
-        self.connection.write(payload.encode())
+        payload = "C"+str(+m_type.value[0])+message+"\n"
+        print(payload)
+        self.connection.write(bytes(payload,'utf-8'))
+
+    def get_message(self):
+        """
+        get_message permet de recevoir des messages de l'arduino
+
+        
+        """
+        msg= self.connection.read_until(";").decode()
+        return msg
+        
+
 
     def init_connection(self):
         """
@@ -77,14 +90,15 @@ class ArduinoBridge:
         try:
             #linux os
             if os.name=="posix":
+                print(self.port)
                 self.connection = serial.Serial(port='/dev/tty'+self.port, baudrate=self.baud,timeout=None)
                 print("Connection SUCESS with", self.port)
             else:
                 self.connection = serial.Serial(self.port,self.baud,timeout=None,)
                 print("Connection SUCESS with", self.port)
 
-        except:
-            print("ERROR : URGENT EXIT !!")
+        except Exception as e:
+            print(e)
             sys.exit()
 
 
@@ -234,6 +248,13 @@ def main():
         scr.render()
         time.sleep(0.3)
 
+def get_commands():
+    while True:
+        print("dqdqdq")
+        m=bridge.get_message()
+        print(m)
+        
+
 
 # main
 e_clav_cmd = Entry("commandes", clavier_cmd)
@@ -252,7 +273,7 @@ scr.curr_d = m_main
 
 # arduino bridge setup
 if os.name=="posix":
-    bridge = ArduinoBridge("USB1", 9600,ArduinoPlatform.LINUX)
+    bridge = ArduinoBridge("ACM0", 9600)
     bridge.init_connection()
 else:
     bridge = ArduinoBridge("COM3", 9600)
@@ -265,6 +286,9 @@ else:
 
 listener = Listener(on_press=key_press, on_release=key_release)
 listener.start()
-thr=threading.Thread(target=main)
-thr.start()
+thr_m=threading.Thread(target=main)
+thr_m.start()
+
+thr_r=threading.Thread(target=get_commands)
+thr_r.start()
 
