@@ -3,9 +3,13 @@
 #include "ArmController.h"
 #include "MovementsController.h"
 #include "Shortcuts.h"
+#include "CommandsHandler.h"
+
+//allocations des differentes qui vont etre ajouté par la suite a la pool et accessible de maniere unique n'importe où dans le code
 Pool &p_pool = Pool::getInst();
 ArmController *p_arm = new ArmController();
 MovementsController *p_mov = new MovementsController();
+CommandsHandler *p_com = new CommandsHandler();
 
 //joystick
 int joy_x = 1;
@@ -19,8 +23,6 @@ int pot_sw = 4;
 int potval = 0;
 int currCLK;
 int prevCLK;
-
-bool direct = true;
 
 void setup_arm()
 {
@@ -63,16 +65,20 @@ void update_pot()
     //si l'etat courant different etat precedent, on a changé qq chose
     if (currCLK != prevCLK)
     {
+        //cas ou tourne dans le sens anti horaire
         if (digitalRead(pot_dt) != currCLK)
         {
             potval--;
         }
+        //sinon c'est dans le sens horaire
         else
         {
             potval++;
         }
+        //on "bloque" la valeur entre 0 et 180
         potval = Utils::clamp<int>(potval, 0, 180);
         Serial.println(potval);
+        //on change la rotation
         p_arm->getComponent("base")->change_rotation(potval);
         prevCLK = currCLK;
     }
@@ -98,20 +104,21 @@ void update_mov_queue()
         p_mov->delete_first_movement();
     }
 }
+
 void setup()
 {
 
     Serial.begin(9600);
     //on configure le tableaux de ressourses en convertissant chaque objets sous le type ressource
-    Ressource *a_ressources[2] = {static_cast<Ressource *>(p_arm), static_cast<Ressource *>(p_mov)};
-    p_pool.add_ressources(a_ressources, 2);
+    Ressource *a_ressources[3] = {static_cast<Ressource *>(p_arm), static_cast<Ressource *>(p_mov), static_cast<Ressource *>(p_com)};
+    p_pool.add_ressources(a_ressources, 3);
     setup_arm();
     setup_pot();
 }
 
 void loop()
 {
-    if (direct)
+    if (p_arm->direct)
     {
         update_pot();
     }
@@ -120,4 +127,5 @@ void loop()
     {
         update_mov_queue();
     }
+    //p_com->handleCommands();
 }
