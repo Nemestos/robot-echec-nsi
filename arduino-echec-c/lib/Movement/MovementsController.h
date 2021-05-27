@@ -3,6 +3,21 @@
 #include "ArmController.h"
 #include "Movement.h"
 #include "Ressource.h"
+
+/*
+structure de donnée pour la position d'une case 
+*/
+struct Position
+{
+public:
+    //position x de [0;8]
+    int x;
+    //position y de [0;8]
+    int y;
+    //tableau de movement a effectuer pour chaque moteur individuellement
+    Movement *servos_mov[SERVO_COUNT] = {};
+};
+
 /*
 classe permettant la gestion des movements du servo en utilisant une file
 */

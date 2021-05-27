@@ -152,5 +152,3 @@ else:
     bridge = ArduinoBridge("COM3", 9600)
 
 bridge.run()
-
-

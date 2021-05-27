@@ -5,7 +5,6 @@ from serial.serialutil import SerialException
 from constantes import *
 import time
 import gui
-import tk
 
 class RobotArm:
     def __init__(self, board, pins=[ARM_BASE], startAngles=[BASE_START]):
@@ -61,30 +60,42 @@ class RobotArm:
 
 class Position:
     def __init__(self, x, y, servos):
+        """
+        represente ce qui va etre propre a chaque case du plateau pour permettre aux moteurs de si diriger
+        """
         self.x = x
         self.y = y
         self.servos = servos
 
     def __repr__(self) -> str:
-        return f'x:{self.x}; y:{self.y}; servos:{self.servos}'
+        #retourne la representation textuelle si on veut l'afficher dans la console ou le sauvegarder
+        return f'x:{self.x},y:{self.y},servos:{self.servos}'
 
 
 class Plateau:
     def __init__(self, taille):
+        """
+        represente le plateau de jeu contenant une matrice d'objets Position(pour permettre de sauvegarder les positions moteur pour chaque case par la suite)
+        """
         self.taille = taille
         self.grille = []
         for i in range(taille, 0, -1):
             ligne = []
             for j in range(taille):
+                #on recupere dans la table ascii la lettre en majuscule et on initialise un tableau de positions servo
                 pos = Position(chr(65+j), i, [SERVO_DEFAULT]*SERVO_COUNT)
                 ligne.append(pos)
             self.grille.append(ligne)
 
     def get_pos_by_case(self, x, y):
+        #on parcoure notre grille
         for i in range(self.taille):
             for j in range(self.taille):
+
                 case = self.grille[i][j]
+                #si les positions de la case sont bonne
                 if case.x == x and case.y == y:
+                    #on renvoie l'objet Position
                     return case
         return None
 
@@ -103,10 +114,8 @@ if __name__ == '__main__':
     iter8.start()
 
     #demarrage de la gui
-    root=tk.Tk()
-    gui.Application(root).pack(side="top",fill="both",expand=True)
-    root.mainloop()
-
+    app=gui.get_qt_inst()
+    fen=gui.MainWindow()
     robot = RobotArm(board)
 
     if DIRECT:
