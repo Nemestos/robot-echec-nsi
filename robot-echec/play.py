@@ -4,28 +4,8 @@ from utils import *
 from serial.serialutil import SerialException
 from constantes import *
 import time
-
-
-class Queue:
-    def __init__(self):
-        self.lst = []
-
-    def enfiler(self, value):
-        self.lst.append(value)
-
-    def defiler(self):
-        if len(self.lst > 0):
-            return self.lst.pop(0)
-
-    def is_empty(self):
-        return self.lst == []
-
-    def get_first(self):
-        if self.is_empty():
-            return None
-        else:
-            return self.lst[0]
-
+import gui
+import tk
 
 class RobotArm:
     def __init__(self, board, pins=[ARM_BASE], startAngles=[BASE_START]):
@@ -111,14 +91,21 @@ class Plateau:
 
 if __name__ == '__main__':
 
+    #connexion avec l'arduino
     try:
         board = pyfirmata.Arduino(ARDUINO_LINUX_PORT)
-        print("connection sucess")
+        print("connection sucesxws")
     except SerialException:
         print("erreur de port")
         exit(1)
+    #definition du thread servant a la gestion des evenement venant de l'arduino dans un thread separé
     iter8 = pyfirmata.util.Iterator(board)
     iter8.start()
+
+    #demarrage de la gui
+    root=tk.Tk()
+    gui.Application(root).pack(side="top",fill="both",expand=True)
+    root.mainloop()
 
     robot = RobotArm(board)
 

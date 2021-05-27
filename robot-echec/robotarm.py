@@ -54,8 +54,6 @@ class Joint:
         """
         hardWrite permet de bouger le servo de maniere directe
 
-        
-
         Arguments:
             value {int} -- valeur du servo
         """
