@@ -114,16 +114,23 @@ if __name__ == '__main__':
     iter8.start()
 
     #demarrage de la gui
+    #on recupere l'instance a l'app
     app=gui.get_qt_inst()
-    fen=gui.MainWindow()
+    #on crée notre fenetre de base
+    fen=gui.Window(800,600)
+    #on l'affiche
+    fen.show()
+    #puis on lance l'appli
+    app.exec_()
+
     robot = RobotArm(board)
 
     if DIRECT:
 
-        commands_joint = {board.get_pin(f'a:{JOY_X_PIN}:p'): update_pot}
-        for i in commands_joint.keys():
-            i.mode = pyfirmata.INPUT
-            i.enable_reporting()
+        # commands_joint = {board.get_pin(f'a:{JOY_X_PIN}:p'): update_pot}
+        # for i in commands_joint.keys():
+        #     i.mode = pyfirmata.INPUT
+        #     i.enable_reporting()
 
         while True:
             for comm, func in commands_joint.items():
