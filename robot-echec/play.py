@@ -7,8 +7,7 @@ import keyboard
 import os
 import time
 import threading
-import sys
-            
+import sys           
 
 """GUI
 """
