@@ -1,4 +1,4 @@
-from robotarm import Joint
+from joint import Joint
 import pyfirmata
 from serial.serialutil import SerialException
 from constantes import *
@@ -17,7 +17,9 @@ def clear():
         os.system("clear")
     else:
         os.system("cls")
-        
+"""
+vue de la gestion et l'affichage du plateau
+"""
 class PlateauView:
     def __init__(self):
         self.title="plateau"
@@ -48,11 +50,10 @@ class PlateauView:
         if keyboard.is_pressed('l'):
             pass
             plateau.load_grid()
-                
-            
-
-
-
+      
+"""
+vue du mode direct pour controller le robot 
+"""          
 class DirectView:
     def __init__(self):
         self.title="direct"
@@ -62,10 +63,8 @@ class DirectView:
         print("echap pour revenir en arriere")
         
     def update(self):
-
         if keyboard.is_pressed('r'):
-            robot.returnToStart()
-        
+            robot.returnToStart() 
         if keyboard.is_pressed('z'):
             robot.shoulder.addingWrite(DIRECT_STEP)
         if keyboard.is_pressed('s'):
@@ -88,7 +87,9 @@ class DirectView:
         if keyboard.is_pressed('escape'):
             app.change_view("main")
 
-
+"""
+vue du menue principale
+"""
 class MainView:
     def __init__(self):
         self.title="main"
@@ -110,7 +111,9 @@ class MainView:
             print("veuiller saisir un choix valide")
         
 
-
+"""
+classe permettant de gerer l'affichage de la vue et son changement
+"""
 class Application:
     
     def __init__(self):
@@ -138,11 +141,12 @@ class Application:
             print("Aucune vue")
 
 
-"""ROBOT
-"""
+#robot
 """
 !!!n'a pas été testé car pas le robot sous la main...!!!
 mais le principe est le meme
+
+classe permettant de gerer les differentes composante du bras et de gerer leur position
 """
 class RobotArm:
     def __init__(self, board, pins=[ARM_BASE,ARM_SHOULDER,ARM_ELBOW,ARM_WRIST,ARM_GRIPPER], startAngles=[BASE_START,SHOULDER_START,ELBOW_START,WRIST_START,GRIPPER_START]):
@@ -192,7 +196,16 @@ class RobotArm:
         self.elbow.moveToTarget()
         self.wrist.moveToTarget()
         self.gripper.moveToTarget()
-        
+    def executeCommands(self,cases):
+        """permet a partir d'une liste de cases de les lancer les unes apres les autres
+
+        Args:
+            cases (list[str]): liste des cases
+        """
+        #cases est donc une file car chaque commande est gérée les unes apres les autres
+        for case in cases:
+            self.goToCase(case)
+                
     def moveTo(self, targets, delayMs=50):
         """
         moveTo bouger le bras complet de maniere propre avec un delay
@@ -224,6 +237,9 @@ class RobotArm:
         return [self.base.angle,self.shoulder.angle,self.elbow.angle,self.wrist.angle,self.gripper.angle]
 
 
+"""
+classe permettant de stocker les positions servos pour une case en particulier
+"""
 class Position:
     def __init__(self, x, y, servos):
         """
@@ -237,7 +253,9 @@ class Position:
         #retourne la representation textuelle si on veut l'afficher dans la console ou le sauvegarder
         return f'|{self.x}{self.y}:{self.servos}|'
 
-
+"""
+classe permettant de stocker la grille et les methodes de sauvegarde et d'acces associées
+"""
 class Plateau:
     def __init__(self, taille):
         """
@@ -326,8 +344,6 @@ class Plateau:
                     self.grille[i][j].servos=servos
         print("loading grid")
         
-            
-
     def update_case(self,x,y):
         """permet de mettre a jour les positions moteur d'une case
 
