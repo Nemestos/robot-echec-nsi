@@ -2,17 +2,18 @@ import pyfirmata
 
 
 class Joint:
-    def __init__(self, board: pyfirmata.Arduino, pin, start):
+    def __init__(self, board: pyfirmata.Arduino, pin, start,name):
         """
         __init__ crée un composant du bras controllable individuellement
 
         Arguments:
+            name{str} -- nom du joint
             board {pyfirmata.Arduino} -- instance a la carte arduino
             pin {int} -- le pin où le servo est connecté
             start {int} -- la position initiale du servo [0-180]
         """
         board.digital[pin].mode = pyfirmata.SERVO
-
+        self.name=name
         # d pour digital et s pour servo
         self.servo = board.digital[pin]
         self.angle = start
@@ -40,7 +41,7 @@ class Joint:
         Returns:
             [bool] -- etat du mouvement
         """
-        return int(self.angle)== int(self.target)
+        return self.target==None or int(self.angle)== int(self.target)
 
     def moveToTarget(self):
         """
@@ -48,6 +49,7 @@ class Joint:
         """
 
         self.angle += self.stepsize*(-1 if self.target-self.angle < 0 else 1)
+        print(f'"\n"{self.name}:{self.angle}')
         self.servo.write(self.angle)
 
     def hardWrite(self,value):
@@ -60,50 +62,20 @@ class Joint:
         self.angle=value
         self.target=None
         self.servo.write(value)
+    
+    def addingWrite(self,value):
+        """addingWrite permet d'ajouter la valeur a la precedente 
+        et l'ecrire sur le moteur
 
-
-class Arm:
-    def __init__(self, board: pyfirmata.Arduino, pins, startAngles):
-        """
-        __init__ bras possedant plusieurs joints
-        Arguments:
-            board {pyfirmata.Arduino} -- instance a l'arduino
-            pins {int[]} -- tableau de tout les pins des joints
-            startAngles {int[]} -- tableau de tout les angles de departs 
-                                   de tout les joints 
-        """
-        self.joints=[Joint(board,pins[i],startAngles[i])for i in range(len(pins))]
-
-
-    def setTargets(self,targets):
-        """
-        setTargets permet de mettre a jour la position de tout
-        les joins composant le bras
-
-        Arguments:
-            targets {int[]} -- tableau de position pour les servo
-        """
-
-        #le zip permet de faire un for avec deux variables de deux tableaux
-        for joint,target in zip(self.joints,targets):
-            joint.setTarget(target)
-
-    def allFinished(self):
-        """
-        allFinished retourne si tout les servos ont atteint leur position
+        Args:
+            value ([int]): valeur ajoute
 
         Returns:
-            {bool} -- retourne si le bras a totalement finit
+            [type]: [description]
         """
+        self.target=None
+        self.angle+=value
+        self.angle=max(0,min(self.angle,180))
+        print(f'"\n"{self.name}:{self.angle}')
+        self.servo.write(self.angle)
 
-        #all retourne vrai si tout est vrai dans le tableau
-        # ex :all([True,True]) -> True; all([True,False])->False
-        return all(joint.haveFinished() for joint in self.joints)
-    
-    def moveToTargets(self):
-        """
-        moveToTargets permet de mettre a jour la position de tout les joints
-
-        """
-        for joint in self.joints:
-            joint.moveToTarget()
