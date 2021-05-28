@@ -1,6 +1,5 @@
 from robotarm import Joint
 import pyfirmata
-from utils import *
 from serial.serialutil import SerialException
 from constantes import *
 import keyboard
@@ -144,6 +143,7 @@ class Application:
 """
 """
 !!!n'a pas été testé car pas le robot sous la main...!!!
+mais le principe est le meme
 """
 class RobotArm:
     def __init__(self, board, pins=[ARM_BASE,ARM_SHOULDER,ARM_ELBOW,ARM_WRIST,ARM_GRIPPER], startAngles=[BASE_START,SHOULDER_START,ELBOW_START,WRIST_START,GRIPPER_START]):
@@ -209,6 +209,13 @@ class RobotArm:
         while not self.atTargets():
             self.step()
             time.sleep(delayMs/1000)
+            
+    def goToCase(self,x,y):
+        """permet de demander au robot d'aller a une case en question
+        """
+        case=plateau.get_case(x,y)
+        self.moveTo(case.servos)
+        
     def getPos(self):
         """getPos recuperer toute les positions des servos sous forme d'une liste
 
@@ -266,8 +273,23 @@ class Plateau:
                     #on le tuple avec les index
                     
                     return (i,j)
-        return None
+        return (None,None)
     
+    def get_case(self,x,y):
+        """permet de recuperer la case directement
+
+         Args:
+            x (str[a-z]): ligne 
+            y (str(1-8)): colonne
+
+        Returns:
+            [objet Position]: la case demandé
+        """
+        i,j=self.get_pos_index_by_case(x.upper(),y.upper())
+        if i!=None and j!=None:
+            return self.grille[i][j]
+        return None
+            
     
     def save_grid(self):
         """permet de sauvegarder la grille sous un fichier
